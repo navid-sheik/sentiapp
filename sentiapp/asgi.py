@@ -18,7 +18,7 @@ from singleticker.consumers import SingleStockConsumer
 from django.conf.urls import url
 from singleticker.routing  import websocket_urlpatterns_stock
 from home.consumers import HomePageConsumer
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sentiapp.settings')
 django.setup()
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
