@@ -1,0 +1,115 @@
+{% extends "miner/base.html" %}
+
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="myChart"></canvas>
+
+
+    <div>
+        <p id="joke"> Something </p>
+
+
+    </div>
+
+       
+
+  
+  
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+  const labels = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+  ];
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'My First dataset',
+      backgroundColor: 'rgb(255, 99, 132)',
+      borderColor: 'rgb(255, 99, 132)',
+      data: [0, 10, 5, 2, 20, 30, 45],
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {}
+  };
+
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+
+
+        
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        
+    );
+    console.log(chatSocket)
+    chatSocket.onmessage = function(e) {
+        if (typeof e !== 'undefined') {
+            var joke = JSON.parse(e.data);
+            console.log(joke.message);
+            var prices = [joke].map(x => x.open);
+            var dates = [joke].map(x => x.date);
+            const data = {
+                    labels: prices,
+                    datasets: [{
+                    label: 'My First dataset',
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: dates,
+                    }]
+                };
+            var ctx = canvas.getContext('2d');
+                const config = {
+                    type: 'line',
+                    data: data,
+                    options: {}
+            };
+
+             
+            const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
+
+
+            
+
+
+        };
+
+
+
+    
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log(e.error)
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+
+
+</script>
+{% endblock %}

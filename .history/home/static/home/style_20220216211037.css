@@ -1,0 +1,29 @@
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+}
+
+.main {
+  margin: 3rem auto;
+  width: 70%;
+  background-color: aqua;
+  height: 1000px;
+}
+#toprow {
+  display: flex;
+  box-sizing: border-box;
+
+  justify-content: center;
+}
+#toprow > div {
+  box-sizing: border-box;
+  margin: 5px;
+}
+
+p {
+  color: yellow;
+}
+
+div {
+  background-color: beige;
+}

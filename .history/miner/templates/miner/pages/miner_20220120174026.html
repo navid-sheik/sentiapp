@@ -1,0 +1,211 @@
+{% extends "miner/base.html" %}
+
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+
+
+<canvas id="myChart"></canvas>
+
+
+    <div>
+        <p id="joke"> Something </p>
+
+
+    </div>
+
+       
+
+  
+  
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+//   const labels = [
+//     'January',
+//     'February',
+//     'March',
+//     'April',
+//     'May',
+//     'June',
+//   ];
+
+//   const data = {
+//     labels: labels,
+//     datasets: [{
+//       label: 'My First dataset',
+//       backgroundColor: 'rgb(255, 99, 132)',
+//       borderColor: 'rgb(255, 99, 132)',
+//       data: [0, 10, 5, 2, 20, 30, 45],
+//     }]
+//   };
+
+//   const config = {
+//     type: 'line',
+//     data: data,
+//     options: {}
+//   };
+
+//   const myChart = new Chart(
+//     document.getElementById('myChart'),
+//     config
+//   );
+
+
+
+        
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        
+    );
+    console.log(chatSocket)
+    chatSocket.onmessage = function(e) {
+        if (typeof e !== 'undefined') {
+            var joke = JSON.parse(e.data);
+            console.log(joke.message);
+            var prices = joke.message.map(x => x.open);
+            console.log(prices)
+            var dates = joke.message.map(x => x.date);
+            console.log(dates)
+
+            const data = {
+                labels: dates,
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: prices,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            };
+            
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    xAxes: [{
+                    type: 'time',
+                    time: {
+                        parser: 'YYYY-MM-DD HH:mm:ss',
+                        unit: 'minute',
+                        displayFormats: {
+                            'minute': 'YYYY-MM-DD HH:mm:ss',
+                            'hour': 'YYYY-MM-DD HH:mm:ss'
+                        }
+                    },
+                    ticks: {
+                        source: 'data'
+                    }
+                }]    
+                    
+
+
+
+
+
+
+
+                }
+            };
+           
+            const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
+
+
+            
+
+
+        };
+
+
+
+    
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log(e.error)
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+
+
+
+
+
+
+    Vue.component("line-chart", {
+  extends: VueChartJs.Line,
+  props: ["data", "options"],
+  mounted() {
+    this.renderLineChart();
+  },
+  computed: {
+    chartData: function() {
+      return this.data;
+    }
+  },
+  methods: {
+    renderLineChart: function() {
+    this.renderChart(
+            {
+                labels: [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July"
+                ],
+                datasets: [
+                {
+                    label: "Data One",
+                    backgroundColor: "#f87979",
+                    data: this.chartData
+                }
+                ]
+            },
+            { responsive: true, maintainAspectRatio: false }
+            );      
+            }
+        },
+        watch: {
+            data: function() {
+            this._chart.destroy();
+            //this.renderChart(this.data, this.options);
+            this.renderLineChart();
+            }
+        }
+        });
+
+        var vm = new Vue({
+        el: ".app",
+        data: {
+            message: "Hello World",
+            dataChart: [10, 39, 10, 40, 39, 0, 0],
+            test: [4, 4, 4, 4, 4, 4]
+        },
+        methods: {
+            changeData: function() {
+            this.dataChart = [6, 6, 3, 5, 5, 6];
+            }
+        }
+        });
+
+
+
+
+</script>
+{% endblock %}

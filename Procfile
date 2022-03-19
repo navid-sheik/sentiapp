@@ -1,0 +1,1 @@
+web: gunicorn sentiapp.asgi --log-file -

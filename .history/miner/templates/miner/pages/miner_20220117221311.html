@@ -1,0 +1,37 @@
+<html>
+    <head>
+
+    </head>
+
+    <body>
+
+
+        <p id="joke"> Something </p>
+
+        {{ room_name|json_script:"room-name" }}
+    </body>
+
+
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/stock/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            var joke = JSON.parse(e.data);
+            document.querySelector('#joke').innerHTML =  joke
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+    </script>
+
+</html>

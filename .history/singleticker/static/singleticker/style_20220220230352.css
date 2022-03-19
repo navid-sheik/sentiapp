@@ -1,0 +1,18 @@
+p {
+  background-color: red;
+}
+
+.btn-sample:active {
+  box-shadow: none;
+}
+
+.btn-success:active:focus {
+  color: #ffffff;
+  background-color: #161617;
+  border-color: #494f57;
+}
+
+.flexItem {
+  flex: 1 1 30%; /*grow | shrink | basis */
+  background-color: white;
+}

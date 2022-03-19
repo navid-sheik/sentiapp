@@ -1,0 +1,8 @@
+#main {
+  background-color: 040509;
+}
+
+.flexItem {
+  flex: 1 1 30%; /*grow | shrink | basis */
+  height: 100px;
+}

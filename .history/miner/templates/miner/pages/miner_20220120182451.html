@@ -1,0 +1,149 @@
+{% extends "miner/base.html" %}
+
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+
+
+<canvas id="myChart"></canvas>
+
+
+    <div>
+        <p id="joke"> Something </p>
+
+
+    </div>
+
+       
+
+  
+  
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+  const labels = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+  ];
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'My First dataset',
+      backgroundColor: 'rgb(255, 99, 132)',
+      borderColor: 'rgb(255, 99, 132)',
+      data: [0, 10, 5, 2, 20, 30, 45],
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {}
+  };
+
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+
+
+        
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        
+    );
+    console.log(chatSocket)
+    chatSocket.onmessage = function(e) {
+        if (typeof e !== 'undefined') {
+            var joke = JSON.parse(e.data);
+            console.log(joke.message);
+            var prices = joke.message.map(x => x.open);
+            console.log(prices)
+            var dates = joke.message.map(x => x.date);
+            console.log(dates);
+
+            // const data = {
+            //     labels: dates,
+            //     datasets: [{
+            //         label: 'My First Dataset',
+            //         data: prices,
+            //         fill: false,
+            //         borderColor: 'rgb(75, 192, 192)',
+            //         tension: 0.1
+            //     }]
+            // };
+            
+            // const config = {
+            //     type: 'line',
+            //     data: data,
+            //     options: {
+            //         xAxes: [{
+            //         type: 'time',
+            //         time: {
+            //             parser: 'YYYY-MM-DD HH:mm:ss',
+            //             unit: 'minute',
+            //             displayFormats: {
+            //                 'minute': 'YYYY-MM-DD HH:mm:ss',
+            //                 'hour': 'YYYY-MM-DD HH:mm:ss'
+            //             }
+            //         },
+            //         ticks: {
+            //             source: 'data'
+            //         }
+            //     }]    
+                    
+
+
+
+
+
+
+
+            //     }
+            // };
+           
+            // const myChart = new Chart(
+            // document.getElementById('myChart'),
+            // config);
+
+
+            var mybarChart  = document.getElementById('myChart');
+            mybarChart.data.labels= dates;
+            mybarChart.data.datasets[0].data = prices;
+            mybarChart.update()  
+
+        };
+
+
+
+    
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log(e.error)
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+    
+
+
+
+
+</script>
+{% endblock %}

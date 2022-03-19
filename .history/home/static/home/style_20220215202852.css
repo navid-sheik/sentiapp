@@ -1,0 +1,13 @@
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  background-color: #fcf3f6;
+}
+
+.main {
+  margin: 3rem auto;
+  width: 90%;
+  max-width: 40rem;
+}
+
+style="max-width: 1366px;background-color: aquamarine;"

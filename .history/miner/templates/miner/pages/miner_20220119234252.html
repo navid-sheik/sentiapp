@@ -1,0 +1,146 @@
+{% extends "miner/base.html" %}
+
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<canvas id="myChart"></canvas>
+
+
+    <div>
+        <p id="joke"> Something </p>
+
+
+    </div>
+
+       
+
+  
+  
+
+
+
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+//   const labels = [
+//     'January',
+//     'February',
+//     'March',
+//     'April',
+//     'May',
+//     'June',
+//   ];
+
+//   const data = {
+//     labels: labels,
+//     datasets: [{
+//       label: 'My First dataset',
+//       backgroundColor: 'rgb(255, 99, 132)',
+//       borderColor: 'rgb(255, 99, 132)',
+//       data: [0, 10, 5, 2, 20, 30, 45],
+//     }]
+//   };
+
+//   const config = {
+//     type: 'line',
+//     data: data,
+//     options: {}
+//   };
+
+//   const myChart = new Chart(
+//     document.getElementById('myChart'),
+//     config
+//   );
+
+
+
+        
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        
+    );
+    console.log(chatSocket)
+    chatSocket.onmessage = function(e) {
+        if (typeof e !== 'undefined') {
+            var joke = JSON.parse(e.data);
+            console.log(joke.message);
+            var prices = joke.message.map(x => x.open);
+            console.log(prices)
+            var dates = joke.message.map(x => x.date);
+            console.log(dates)
+
+            const data = {
+                labels: [133,44],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: prices,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            };
+            
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            parser: 'HH:mm:ss a', //these formatting values do nothing, I've tried a few different ones
+                            unit: 'second', //I have tried minutes and hours too, same result
+                            displayFormats: {
+                                'millisecond': 'HH:mm:ss a', //I have tried without the 'a' too, same result
+                                'second': 'HH:mm:ss a',
+                                'minute': 'HH:mm:ss a',
+                                'hour': 'HH:mm:ss a',
+                                'day': 'HH:mm:ss a',
+                                'week': 'HH:mm:ss a',
+                                'month': 'HH:mm:ss a',
+                                'quarter': 'HH:mm:ss a',
+                                'year': 'HH:mm:ss a',}
+                        },
+                        ticks: {
+                            source: 'auto'
+                        }}]
+                    
+
+
+
+
+
+
+
+                }
+            };
+           
+            const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
+
+
+            
+
+
+        };
+
+
+
+    
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log(e.error)
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+
+
+</script>
+{% endblock %}

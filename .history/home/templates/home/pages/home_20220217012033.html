@@ -1,0 +1,362 @@
+{% extends "home/base.html" %} {% block content %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<div id="app" class='container'>
+
+
+
+
+
+
+
+
+
+    <div class="row no-gutters">
+
+
+        <!--STOCKS PRICES-->
+
+        <!--NASDAQ 100-->
+
+        <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 card"
+            style="overflow-y: auto; overflow-x: hidden; height:500px;">
+            <h3> NASDAQ 100 </h3>
+            <div class="row no-gutters" v-for="(stock, index) in symbols" style="margin-bottom: 10px; ">
+
+                <div class="col-2">
+                    <img v-bind:src="`https://financialmodelingprep.com/image-stock/${stock.symbol}.png`"
+                        class="rounded mx-auto d-block" alt="Card image cap" style="width: 60%; " />
+                </div>
+
+                <div class="col-6  d-flex align-items-center" style="border-bottom: 1px solid lightgrey;">
+                    <div>
+                        <div>
+                            [[ stock.name]]
+                        </div>
+                        <div>
+                            $[[ stock.symbol]] - [[stock.sector]]
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center"
+                    style=" border-bottom: 1px solid lightgrey;">
+                    <div>
+                        <div v-if="mapped_stocks_prices.length != 0">
+                            [[ mapped_stocks_prices[index].latestPrice ]]
+                        </div>
+                        <div v-if="mapped_stocks_prices.length != 0">
+                            [[ mapped_stocks_prices[index].change ]]
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-2 d-flex justify-content-center align-items-center"
+                    style=" border-bottom: 1px solid lightgrey;">
+                    <a :href="`/stock/${stock.symbol}`" v-if="checkIfInclude(stock.symbol)">View Sentiment</a>
+                    <button class="btn btn-dark" @click.native="startMiningTweetsStock(stock.symbol)" v-else>
+                        MINE</button>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!--MOST ACTIVE-->
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 card">
+            <h3> MOST ACTIVE </h3>
+            <div class="row" v-for="stock in list_most_active">
+                <div class="col-8">
+                    <div>[[ stock.name]] </div>
+                    <div>[[ stock.symbol]] </div>
+
+                </div>
+
+                <div class="col" style="background-color: green;">
+                    <p>[[stock.latestPrice]] </p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+    <div class="col-4">
+
+
+        <!--MOST GAINERS-->
+        <div class="col card">
+            <div class="row" v-for="stock in list_most_gainers">
+                <div>
+                    <p> [[ stock.symbol]] | <span>[[ stock.companyName]]</span> | <span>[[ stock.latestPrice]]</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--MOST LOSERS-->
+        <div class="col">
+            <div class="row" v-for="stock in list_most_losers">
+                <div>
+                    <p> [[ stock.symbol]] | <span>[[ stock.companyName]]</span> | <span>[[ stock.latestPrice]]</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+    <!--NEWS-->
+    <div class="row" v-if="news.lenght != 0">
+        <div class="card-group" v-for="single in news">
+            <div class="card">
+                <img class="card-img-top" v-bind:src="single.image" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">[[ single.headline ]]</h5>
+                    <p class="card-text"> [[ single.summary]]</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">[[ single.datetime]]</small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block scripts %}
+<script>
+    let myApp = Vue.createApp({
+        delimiters: ["[[", "]]"],
+        data() {
+            return {
+                symbols: [],
+                string_symbolys_fetch: "",
+                prices_symbols: [],
+                list_most_active: [],
+                list_most_gainers: [],
+                list_most_losers: [],
+                list_mined_stock: [],
+                mapped_stocks_prices: [],
+                string_news: "",
+                news_symbols: [],
+                news: [],
+            }
+        },
+
+        async created() {
+            //Web Socket socket
+            const homeSocket = new WebSocket(
+                'ws://' +
+                window.location.host +
+                '/ws/home/'
+
+            );
+
+            //Reference vue variable inside websocket
+            let self = this
+            //Receive message from websocket
+            homeSocket.onmessage = function (e) {
+                if (typeof e !== 'undefined') {
+                    var response = JSON.parse(e.data);
+                    console.log(response)
+                    if (response.hasOwnProperty('most_active')) {
+                        console.log(response.most_active)
+                        self.most_active = response.most_active
+                    }
+                    if (response.hasOwnProperty('most_gainers')) {
+                        console.log(response.most_gainers)
+                        self.most_gainers = response.most_gainers
+                    }
+                    if (response.hasOwnProperty('most_losers')) {
+                        console.log(response.most_losers)
+                        self.most_losers = response.most_losers
+                    }
+                    if (response.hasOwnProperty('nasdaq')) {
+                        self.prices_symbols = response.nasdaq
+
+                        console.log("Server response ")
+
+                        var copyArray = []
+                        console.log(self.symbols)
+                        self.symbols.forEach(element => copyArray.push((self.prices_symbols[element.symbol].quote)));
+                        self.mapped_stocks_prices = copyArray
+
+                    }
+
+
+                };
+
+
+
+
+            };
+            //Close websocket
+            homeSocket.onclose = function (e) {
+                console.log(e.error)
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            this.get_symbols();
+            this.getMostActive();
+            // this.getMostGainers();
+            // this.getMostLosers();
+            this.getAllTweetsMining()
+        },
+        methods: {
+
+
+            //Fetch methods
+            async get_symbols() {
+                var symbolsPath = "{%url 'home:fetch_symbols'%}"
+                let response = await fetch(symbolsPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.symbols = data.stock_symbol
+                    this.symbols.forEach(element => this.string_symbolys_fetch += element.symbol.toLowerCase() + ",");
+                    console.log(data)
+                    console.log(this.string_symbolys_fetch)
+                    //Fetch batch prices for symbols 
+                    this.getBatchPrices(this.string_symbolys_fetch)
+                } else {
+                    alert("Failed to fetch symbols");
+                }
+            },
+            async getMostActive() {
+                var stockPath = "{%url 'home:get_most_active'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_active = data.stock_symbol
+                    this.list_most_active.forEach(element => this.string_news += element.symbol.toLowerCase() + ",");
+                    // this.get_batch_news(this.string_news)
+
+                } else {
+                    alert("Failed to load most active stocks");
+                }
+
+            },
+            async getMostGainers() {
+                var stockPath = "{%url 'home:get_most_gainers'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_gainers = data.stock_symbol
+                } else {
+                    alert("Failed to get most gainers to the list");
+                }
+
+
+            },
+            async getMostLosers() {
+                var stockPath = "{%url 'home:get_most_losers'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_losers = data.stock_symbol
+                    console.log(data)
+                } else {
+                    alert("Failed to get the most losers");
+                }
+
+            },
+            async startMiningTweetsStock(ticker_id) {
+                let miningPath = "{%url 'home:start_mining_tweets' 2000000000000000%}".replace("2000000000000000", ticker_id.toLowerCase())
+                let response = await fetch(miningPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_mined_stock.push(data.ticker_id);
+                    console.log(data);
+                } else {
+                    alert("Failed to mine tweet for ticker");
+                }
+
+
+
+
+            },
+            async getAllTweetsMining() {
+                let allMiningPath = "{%url 'home:get_all_mining_tweets' %}";
+                let response = await fetch(allMiningPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_mined_stock = data.tasks
+                    console.log("mining tweets")
+                    console.log(data)
+                } else {
+                    alert("Failed to get all tweets for a stock");
+                }
+
+            },
+            async getBatchPrices(stocks) {
+                let batchPath = "{%url 'home:get_batch_stock_prices' 2000000000000000%}".replace("2000000000000000", stocks.toLowerCase());
+                let response = await fetch(batchPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.prices_symbols = data.stock_prices
+                    this.symbols.forEach(element => this.mapped_stocks_prices.push((this.prices_symbols[element.symbol].quote)));
+                } else {
+                    alert("Failed to get batch prices");
+                }
+
+            },
+            async get_batch_news(stocks) {
+                let batchPath = "{%url 'home:get_batch_news' 2000000000000000%}".replace("2000000000000000", stocks.toLowerCase());
+                let response = await fetch(batchPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.news_symbols = data.stock_prices
+                    this.list_most_active.forEach(element => this.news.push(this.news_symbols[element.symbol].news[0]))
+                    // remove undefined values
+                    this.news = this.news.filter(function (element) {
+                        return element !== undefined;
+                    });
+                    console.log(this.news)
+                } else {
+                    alert("failed to load the list of hobbies");
+                }
+
+            },
+            //helper methods
+            checkIfInclude(stock) {
+                if (this.list_mined_stock.lenght != 0)
+                    return this.list_mined_stock.includes(stock.toLowerCase())
+                return false
+            },
+            shuffle(array) {
+                let currentIndex = array.length,
+                    randomIndex;
+                // While there remain elements to shuffle...
+                while (currentIndex != 0) {
+
+                    // Pick a remaining element...
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+
+                    // And swap it with the current element.
+                    [array[currentIndex], array[randomIndex]] = [
+                        array[randomIndex], array[currentIndex]
+                    ];
+                }
+
+                return array;
+            }
+        }
+    });
+    myApp.mount('#app');
+</script>
+
+{% endblock %}

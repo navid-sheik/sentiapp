@@ -1,0 +1,666 @@
+{% extends "home/base.html" %} {% block content %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<div id="app" class='container'>
+
+
+
+
+
+
+
+
+
+    <div class="row" style="margin-top: 20px;">
+
+
+        <!--STOCKS PRICES-->
+
+        <!--NASDAQ 100-->
+
+        <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+
+            <div class=" card card-block"
+                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px; background-color: #383c48;color: white;">
+                <h3 style="padding-left: 22.93px;"> NASDAQ 100 </h3>
+                <div class="row no-gutters" v-for="(stock, index) in symbols" style="margin-bottom: 10px;">
+
+                    <div class="col-2">
+                        <img v-bind:src="`https://financialmodelingprep.com/image-stock/${stock.symbol}.png`"
+                            class="rounded mx-auto d-block" alt="Card image cap" style="width: 60%; " />
+                    </div>
+
+                    <div class="col-6  d-flex align-items-center" style="border-bottom: 1px solid lightgrey;">
+                        <div>
+                            <div>
+                                [[ stock.name]]
+                            </div>
+                            <div>
+                                $[[ stock.symbol]] - [[stock.sector]]
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-2 d-flex justify-content-center align-items-center"
+                        style=" border-bottom: 1px solid lightgrey;">
+                        <div>
+                            <div v-if="mapped_stocks_prices.length != 0">
+                                $[[ mapped_stocks_prices[index].latestPrice ]]
+                            </div>
+                            <div v-if="mapped_stocks_prices.length != 0">
+                                [[ mapped_stocks_prices[index].change ]]%
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-2 d-flex justify-content-center align-items-center">
+                        <a :href="`/stock/${stock.symbol}`" v-if="checkIfInclude(stock.symbol)">
+
+
+                            <button class="btn btn-primary">
+                                VIEW </button>
+                        </a>
+
+                        <button class="btn btn-light" :id="`mine-btn-${stock.symbol}`"
+                            @click.native="startMiningTweetsStock(stock.symbol)" v-else>
+                            MINE</button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--MOST ACTIVE-->
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+
+
+            <div class="card card-block"
+                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px;padding: 5px; background-color: #383c48;color: white;">
+                <h3> MOST ACTIVE </h3>
+                <div class="row" v-for="stock in list_most_active">
+                    <div class="col-8" style="border-bottom: 1px solid lightgrey;">
+                        <div>
+                            <div> <b>[[ stock.symbol]] </b></div>
+                            <div>
+                                <p>[[ stock.companyName]] </p>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col d-flex justify-content-center" style=" border-bottom: 1px solid lightgrey;">
+                        <div>
+                            <div> <b>$[[stock.latestPrice]] </b></div>
+                            <div>
+                                <p style="text-align: center;">[[ (stock.changePercent * 100).toFixed(2) ]]% </p>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <!--IEX VOLUME-->
+    <div class="row flex-nowrap" style="background-color: none;overflow-y: scroll;padding: 10px;">
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" v-for="stock in list_iex_stock">
+            <div class="card card-block"
+                style="padding: 10px;display: flex; flex-direction: column;background-color: #383c48; color: white;">
+                <!-- TICKER-->
+                <div>
+                    <span style="background-color: none;"> <b>[[stock.symbol]] </b></span>
+                </div>
+                <!-- STOCK NAME-->
+                <div style="height: 48px; text-overflow: ellipsis; overflow: hidden;">
+                    <span> [[stock.companyName]]</span>
+
+                </div>
+
+                <!-- PRICE STOCK & CHANGE-->
+                <div style="display: flex;flex-direction: column;margin-top: 34px;">
+                    <div>
+                        $[[stock.latestPrice]]
+
+
+                    </div>
+
+                    <div style="border-radius: 5px;;">
+
+                        <span style="padding: 2px;"
+                            :style="[stock.changePercent < 0 ? {'background': '#ff0000'} : {'background': '#18a558'}]">[[(stock.changePercent
+                            * 100).toFixed(2)]]%</span>
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="row" style="background-color: none;margin-top: 50px;" v-if="news.lenght != 0">
+        <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: none;">
+
+            <!-- Row 1 new-->
+            <div class="row no-gutters" style="background-color: lawngreen;margin-bottom: 25px;"
+                v-for="single in news.slice(0,1)">
+
+
+                <div class="col-8" style="background-color: gray;">
+                    <img v-bind:src="single.image" style="width: 100%; height: 100%;object-fit: fill;" />
+                </div>
+
+                <div class="col" style="background-color: #383c48;">
+                    <div
+                        style="display:flex; flex-direction: column;align-items: stretch;justify-content: stretch;padding: 10px;">
+                        <div
+                            style=" color: white;height: 144px; text-overflow: ellipsis; overflow: hidden;margin-bottom: 10px;">
+
+                            <h5>[[ single.headline ]]</h5>
+
+                        </div>
+
+                        <div
+                            style="color: white; height: 120px; text-overflow: ellipsis; overflow: hidden; margin-bottom: 10px;">
+                            <p> [[ single.summary]]</p>
+
+
+                        </div>
+
+                        <div style="display: flex; flex-direction: row; justify-content: flex-end;">
+                            <button class="btn btn-dark"> READ MORE </button>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2 new-->
+            <div class="row" style="background-color: none;padding: 10px; margin-bottom: 20px;">
+
+
+                <div class="col" style="padding: 10px;" v-for="single in news.slice(2,5)">
+                    <div class="card card-block" style="background-color: #383c48;">
+
+                        <div>
+                            <img v-bind:src="single.image" style="width: 100%; height:150px; object-fit: fill;" />
+
+
+                        </div>
+
+                        <div style="color: white;height: 70px; text-overflow: ellipsis; overflow: hidden;">
+                            <p>[[ single.headline ]]</p>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Row 3 new-->
+
+
+
+            <div class="row no-gutters" style="background-color: seagreen; margin-bottom: 20px;"
+                v-for="single in news.slice(5, -1)">
+                <div class=" col-4" style="background-color: indigo;">
+                    <img v-bind:src="single.image" style="width: 100%; height: 100%;object-fit: fill;" />
+
+                </div>
+
+                <div class="col" style="background-color: #383c48;">
+                    <div
+                        style="display:flex; flex-direction: column;align-items: center;justify-content: center;padding: 10px;">
+                        <div
+                            style="background-color: #383c48; color: white;height: 55px; text-overflow: ellipsis; overflow: hidden;margin-bottom: 5px;">
+
+                            <h4>[[ single.headline ]]</h4>
+
+                        </div>
+
+                        <div
+                            style="background-color: #383c48; color: white;height: 70px; text-overflow: ellipsis; overflow: hidden;">
+                            <p>[[ single.summary]]</p>
+
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" style="background-color: none;">
+
+            <div style="display: flex;flex-direction: column;">
+
+
+
+                <div class="card card-block"
+                    style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px;padding: 5px; background-color: #383c48;color: white;">
+
+                    <h3> MOST GAINERS </h3>
+                    <div class="row" v-for="stock in list_most_gainers">
+                        <div class="col-8" style="border-bottom: 1px solid lightgrey;">
+                            <div>
+                                <div> <b>[[ stock.symbol]] </b></div>
+                                <div>
+                                    <p>[[ stock.companyName]] </p>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="col d-flex justify-content-center" style="border-bottom: 1px solid lightgrey;">
+                            <div>
+                                <div> <b>$[[stock.latestPrice]] </b></div>
+                                <div>
+                                    <p style="text-align: center;">[[ (stock.changePercent * 100).toFixed(2) ]]% </p>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card card-block"
+                    style="overflow-y: auto; overflow-x: hidden; height:500px;padding: 5px; background-color: #383c48;color: white;">
+
+                    <h3> MOST LOSERS </h3>
+                    <div class="row" v-for="stock in list_most_losers">
+                        <div class="col-8" style="border-bottom: 1px solid lightgrey;">
+                            <div>
+                                <div> <b>[[ stock.symbol]] </b></div>
+                                <div>
+                                    <p>[[ stock.companyName]] </p>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="col d-flex justify-content-center" style=" border-bottom: 1px solid lightgrey;">
+                            <div>
+                                <div> <b>$[[stock.latestPrice]] </b></div>
+                                <div>
+                                    <p style="text-align: center;">[[ (stock.changePercent * 100).toFixed(2) ]]% </p>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <!-- <div class="col-4">
+
+
+       
+        <div class="col card">
+            <div class="row" v-for="stock in list_most_gainers">
+                <div>
+                    <p> [[ stock.symbol]] | <span>[[ stock.companyName]]</span> | <span>[[ stock.latestPrice]]</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="row" v-for="stock in list_most_losers">
+                <div>
+                    <p> [[ stock.symbol]] | <span>[[ stock.companyName]]</span> | <span>[[ stock.latestPrice]]</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div> -->
+
+
+
+
+</div>
+
+{% endblock %} {% block scripts %}
+<script>
+    let myApp = Vue.createApp({
+        delimiters: ["[[", "]]"],
+        data() {
+            return {
+                symbols: [],
+                string_symbolys_fetch: "",
+                prices_symbols: [],
+                list_most_active: [],
+                list_most_gainers: [],
+                list_most_losers: [],
+                list_mined_stock: [],
+                list_iex_stock: [],
+                mapped_stocks_prices: [],
+                string_news: "",
+                news_symbols: [],
+                news: [],
+            }
+        }, computed: {
+            colorClass() {
+                let color = (computer.Online === '1') ? 'green' : 'red';
+                return 'color: ' + color;
+            }
+
+        },
+
+        async created() {
+            //Web Socket socket
+            const homeSocket = new WebSocket(
+                'ws://' +
+                window.location.host +
+                '/ws/home/'
+
+            );
+
+            //Reference vue variable inside websocket
+            let self = this
+            //Receive message from websocket
+            homeSocket.onmessage = function (e) {
+                if (typeof e !== 'undefined') {
+                    var response = JSON.parse(e.data);
+                    console.log(response)
+                    if (response.hasOwnProperty('most_active')) {
+                        console.log(response.most_active)
+                        self.list_most_active = response.most_active
+                    }
+                    if (response.hasOwnProperty('most_gainers')) {
+                        console.log(response.most_gainers)
+                        self.list_most_gainers = response.most_gainers
+                    }
+                    if (response.hasOwnProperty('most_losers')) {
+                        console.log(response.most_losers)
+                        self.list_most_losers = response.most_losers
+                    }
+
+                    if (response.hasOwnProperty('most_volume')) {
+                        console.log(response.most_losers)
+                        self.list_iex_stock = data.most_volume
+                    }
+                    if (response.hasOwnProperty('nasdaq')) {
+                        self.prices_symbols = response.nasdaq
+
+                        console.log("Server response ")
+
+                        var copyArray = []
+                        console.log(self.symbols)
+                        self.symbols.forEach(element => copyArray.push((self.prices_symbols[element.symbol].quote)));
+                        self.mapped_stocks_prices = copyArray
+
+                    }
+
+
+                };
+
+
+
+
+            };
+            //Close websocket
+            homeSocket.onclose = function (e) {
+                console.log(e.error)
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            this.get_symbols();
+            this.getMostActive();
+            this.getMostGainers();
+            this.getMostLosers();
+            this.getAllTweetsMining()
+            this.getIexVolume()
+        },
+        methods: {
+
+
+            //Fetch methods
+            async get_symbols() {
+                var symbolsPath = "{%url 'home:fetch_symbols'%}"
+                let response = await fetch(symbolsPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.symbols = data.stock_symbol
+                    this.symbols.forEach(element => this.string_symbolys_fetch += element.symbol.toLowerCase() + ",");
+                    console.log(data)
+                    console.log(this.string_symbolys_fetch)
+                    //Fetch batch prices for symbols 
+                    this.getBatchPrices(this.string_symbolys_fetch)
+                } else {
+                    alert("Failed to fetch symbols");
+                }
+            },
+            async getMostActive() {
+                var stockPath = "{%url 'home:get_most_active'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_active = data.stock_symbol
+                    this.list_most_active.forEach(element => this.string_news += element.symbol.toLowerCase() + ",");
+                    this.get_batch_news(this.string_news)
+
+                } else {
+                    alert("Failed to load most active stocks");
+                }
+
+            },
+            async getMostGainers() {
+                var stockPath = "{%url 'home:get_most_gainers'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_gainers = data.stock_symbol
+                } else {
+                    alert("Failed to get most gainers to the list");
+                }
+
+
+            },
+            async getMostLosers() {
+                var stockPath = "{%url 'home:get_most_losers'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_most_losers = data.stock_symbol
+                    console.log(data)
+                } else {
+                    alert("Failed to get the most losers");
+                }
+
+            },
+
+            async getIexVolume() {
+                var stockPath = "{%url 'home:get_iex_volume'%}"
+                let response = await fetch(stockPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_iex_stock = data.stock_symbol
+                    console.log(data)
+                } else {
+                    alert("Failed to get the most losers");
+                }
+
+            },
+            async startMiningTweetsStock(ticker_id) {
+                var buttonName = "#mine-btn-" + ticker_id;
+                $(buttonName).html('<i class="fas fa-spinner fa-spin"></i>');
+                let miningPath = "{%url 'home:start_mining_tweets' 2000000000000000%}".replace("2000000000000000", ticker_id.toLowerCase())
+                let response = await fetch(miningPath);
+
+                if (response.ok) {
+                    let data = await response.json();
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+
+
+
+                    this.list_mined_stock.push(data.ticker_id);
+                    console.log(data);
+                } else {
+                    $(buttonName).html('MINE');
+                    alert("Failed to mine tweet for ticker");
+                }
+
+
+
+
+            },
+            async getAllTweetsMining() {
+                let allMiningPath = "{%url 'home:get_all_mining_tweets' %}";
+                let response = await fetch(allMiningPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.list_mined_stock = data.tasks
+                    console.log("mining tweets")
+                    console.log(data)
+                } else {
+                    alert("Failed to get all tweets for a stock");
+                }
+
+            },
+            async getBatchPrices(stocks) {
+                let batchPath = "{%url 'home:get_batch_stock_prices' 2000000000000000%}".replace("2000000000000000", stocks.toLowerCase());
+                let response = await fetch(batchPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.prices_symbols = data.stock_prices
+                    this.symbols.forEach(element => this.mapped_stocks_prices.push((this.prices_symbols[element.symbol].quote)));
+                } else {
+                    alert("Failed to get batch prices");
+                }
+
+            },
+            async get_batch_news(stocks) {
+                let batchPath = "{%url 'home:get_batch_news' 2000000000000000%}".replace("2000000000000000", stocks.toLowerCase());
+                let response = await fetch(batchPath);
+                if (response.ok) {
+                    let data = await response.json();
+                    this.news_symbols = data.stock_prices
+                    this.list_most_active.forEach(element => this.news.push(this.news_symbols[element.symbol].news[0]))
+                    // remove undefined values
+                    this.news = this.news.filter(function (element) {
+                        return element !== undefined;
+                    });
+                    console.log(this.news)
+                } else {
+                    alert("failed to load the list of hobbies");
+                }
+
+            },
+            //helper methods
+            checkIfInclude(stock) {
+                if (this.list_mined_stock.lenght != 0)
+                    return this.list_mined_stock.includes(stock.toLowerCase())
+                return false
+            },
+            shuffle(array) {
+                let currentIndex = array.length,
+                    randomIndex;
+                // While there remain elements to shuffle...
+                while (currentIndex != 0) {
+
+                    // Pick a remaining element...
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+
+                    // And swap it with the current element.
+                    [array[currentIndex], array[randomIndex]] = [
+                        array[randomIndex], array[currentIndex]
+                    ];
+                }
+
+                return array;
+            }
+        }
+    });
+    myApp.mount('#app');
+</script>
+
+{% endblock %}

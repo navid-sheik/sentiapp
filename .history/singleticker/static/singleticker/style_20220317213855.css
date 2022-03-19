@@ -1,0 +1,50 @@
+#main {
+  background-color: 040509;
+}
+
+.flexItem {
+  flex: 1 1 30%; /*grow | shrink | basis */
+  margin-bottom: 19px;
+}
+
+.zc-body {
+  background: #232020;
+}
+
+.chart--container {
+  height: 100%;
+  width: 100%;
+  min-height: 530px;
+}
+
+.zc-ref {
+  display: none;
+}
+
+
+
+
+.modal {
+  padding: 0 !important; 
+}
+.modal .modal-dialog {
+  width: 50%;
+  max-width: none;
+  height: 50%;
+  margin: 0;
+}
+.modal .modal-content {
+  height: 50%;
+  border: 0;
+  border-radius: 0;
+}
+.modal .modal-body {
+  overflow-y: auto;
+}
+.modal.show  {
+  display:flex!important;
+  flex-direction:column;
+  justify-content:center;
+  align-content:center;
+  align-items: flex-start;
+}

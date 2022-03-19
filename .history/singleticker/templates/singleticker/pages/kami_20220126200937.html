@@ -1,0 +1,169 @@
+{% extends "singleticker/base.html" %}
+
+
+{% block content %}
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/solid.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<div id="app" >
+    <div class="row">
+        <div id="ticke-title">
+            <h1> $TSL </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div id="left-ticker-container"  class="col-sm">
+        
+            <div id="ticker-price">
+                <div>
+                    <h1> $2000 </h1>
+                </div>
+                <div>
+                    <p> + 2.60% ($74.72) </p>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+        <div id="left-ticker-container" class="col-sm" >
+
+            <div id="ticker-overview">
+                <div class="row">
+
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    
+            
+                    <div class="w-100"></div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                   
+                    <div class="w-100"></div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+                    <div class="col">
+                        <p> Market Cap  : 123</p> 
+                    </div>
+
+                    
+                   
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+<!-- 
+    {% autoescape off %}
+    {{ tweets }}
+    {% endautoescape %} -->
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+//   const labelsx = [
+//     'January',
+//     'February',
+//     'March',
+//     'April',
+//     'May',
+//     'June',
+//   ];
+
+//   const data = {
+//     labels: labelsx,
+//     datasets: [{
+//       label: 'My First dataset',
+//       backgroundColor: 'rgb(255, 99, 132)',
+//       borderColor: 'rgb(255, 99, 132)',
+//       data: [0, 10, 5, 2, 20, 30, 45],
+//     }]
+//   };
+
+//   const config = {
+//                 type: 'line',
+//                 data: data,
+//                 options: {
+//                     xAxes: [{
+//                     type: 'time',
+//                     time: {
+//                         parser: 'YYYY-MM-DD HH:mm:ss',
+//                         unit: 'minute',
+//                         displayFormats: {
+//                             'minute': 'YYYY-MM-DD HH:mm:ss',
+//                             'hour': 'YYYY-MM-DD HH:mm:ss'
+//                         }
+//                     },
+//                     ticks: {
+//                         source: 'data'
+//                     }
+//                 }]        }
+//              };
+
+//   const myChart = new Chart(
+//     document.getElementById('myChart'),
+//     config
+//   );
+
+
+
+        
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/stock/'
+        
+    );
+    console.log(chatSocket)
+    chatSocket.onmessage = function(e) {
+        if (typeof e !== 'undefined') {
+            var joke = JSON.parse(e.data);
+            console.log(joke.message);
+            
+
+        };
+
+
+
+    
+    };
+
+    chatSocket.onclose = function(e) {
+        // console.log(e.error)
+        // console.error('Chat socket closed unexpectedly');
+    };
+
+
+    
+
+
+
+
+</script>
+{% endblock %}

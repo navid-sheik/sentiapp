@@ -1,0 +1,32 @@
+#main {
+  background-color: 040509;
+}
+
+.flexItem {
+  flex: 1 1 30%; /*grow | shrink | basis */
+  margin-bottom: 19px;
+}
+
+.zc-body {
+  background: #232020;
+}
+
+.chart--container {
+  height: 100%;
+  width: 100%;
+  min-height: 530px;
+}
+
+.zc-ref {
+  display: none;
+}
+
+
+.modal.show  {
+  display:flex!important;
+  flex-direction:column;
+  justify-content:center;
+  align-content:center;
+  align-items: flex-start;
+}
+

@@ -1,0 +1,14 @@
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  background-color: 040509;
+}
+#main {
+  background-color: 040509;
+}
+
+.flexItem {
+  flex: 1 1 30%; /*grow | shrink | basis */
+
+  margin-bottom: 19px;
+}
