@@ -62,7 +62,7 @@ class HourlyRecord (models.Model):
     best_tweet_polarity=  models.CharField(max_length=30, null=True, default="1489021532252823553")
     best_tweet_compound=  models.CharField(max_length=30,null=True, default="1489021532252823553")
     def __str__(self) -> str:
-        return self.stock.ticker  + " "  + datetime.strptime(self.tweet_date, "%d %B, %Y - %H:%M" )
+        return self.stock.ticker  + " "  +str(datetime.strptime(self.tweet_date, "%d %B, %Y - %H:%M" ))
 
 class DailyRecord (models.Model):
     stock = models.ForeignKey(StockSummary, on_delete=models.CASCADE, default="TSL")
