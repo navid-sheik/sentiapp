@@ -57,14 +57,15 @@ def startMining(request, ticker_id):
     createHourlyRecord.apply_async(args=(ticker_id.lower(),), countdown=5)
 
     # Create periodic task for mining tweets for stocks
-    name = "mining-tweets-for-" + ticker_id
+    #Create 
+    name = + ticker_id + "-mining-tweets" 
     schedule, createdMiner = IntervalSchedule.objects.get_or_create(
         every=120, period=IntervalSchedule.SECONDS)
     task = PeriodicTask.objects.create(
         interval=schedule, name=name, task="home.tasks.mineTweets", args=json.dumps([ticker_id.lower()]))
 
     # Create periodic task for creating hourly record for stocks
-    nameHourly = "create-hourly-record-for-" + ticker_id
+    nameHourly = ticker_id + "-create-30-minutes-summary"
     scheduleHourly, createdHourly = IntervalSchedule.objects.get_or_create(
         every=250, period=IntervalSchedule.SECONDS)
     taskHourly = PeriodicTask.objects.create(

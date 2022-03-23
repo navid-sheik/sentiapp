@@ -23,7 +23,7 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def addToCeleryBeatStockInfo(self, ticker):
         
-        name =   "every-30-seconds" +  "-" + ticker.lower()
+        name =  ticker.lower() +  "-" +  "every-minute-update-price" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -31,19 +31,20 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
             # args =  args[0]
             # if ticker not in args:
             #     args.append(ticker)
-            task.args =  json.dumps([ticker])
+            task.args =  json.dumps([ticker.lower()])
             task.enabled = True
             
             task.save()
         else:
-            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 30, period =  IntervalSchedule.SECONDS)
+            #every minutes
+            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 60, period =  IntervalSchedule.SECONDS)
             print(ticker)
             task  = PeriodicTask.objects.create(interval  =  schedule, name = name, task = "singleticker.tasks.update_price", args =  json.dumps([ticker]))
 
 
     @sync_to_async
     def addToCeleryBeatStockIGraphInfo(self, ticker):
-        name =   "every-121-seconds" +  "-" + ticker
+        name =  ticker.lower() +  "-" +  "every-10-minutes-graph-price" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -51,19 +52,19 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
             # args =  args[0]
             # if ticker not in args:
             #     args.append(ticker)
-            task.args =  json.dumps([ticker])
+            task.args =  json.dumps([ticker.lower()])
             task.enabled = True
             
             task.save()
         else:
-            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 121, period =  IntervalSchedule.SECONDS)
+            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 600, period =  IntervalSchedule.SECONDS)
             print(ticker)
             task  = PeriodicTask.objects.create(interval  =  schedule, name = name, task = "singleticker.tasks.update_24_hours_graph", args =  json.dumps([ticker]))
 
 
     @sync_to_async
     def addToCeleryBeatStockISentimentInfo(self, ticker):
-        name =   "every-121-seconds-sentiment" +  "-" + ticker
+        name =   ticker.lower() +  "-" +  "every-32-minutes-sentiment" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -71,19 +72,20 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
             # args =  args[0]
             # if ticker not in args:
             #     args.append(ticker)
-            task.args =  json.dumps([ticker])
+            task.args =  json.dumps([ticker.lower()])
             task.enabled = True
             
             task.save()
         else:
-            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 121, period =  IntervalSchedule.SECONDS)
+            #every 31 minutes update sentiment sentiment
+            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 1860, period =  IntervalSchedule.SECONDS)
             print(ticker)
             task  = PeriodicTask.objects.create(interval  =  schedule, name = name, task = "singleticker.tasks.update_sentiment_24Hours", args =  json.dumps([ticker]))
 
 
     @sync_to_async
     def addToCeleryBeatRecentTweets(self, ticker):
-        name =   "every-60-seconds-recent=tweets" +  "-" + ticker
+        name =  ticker.lower() +  "-" +  "every-12-minutes-recent=tweets" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -91,12 +93,13 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
             # args =  args[0]
             # if ticker not in args:
             #     args.append(ticker)
-            task.args =  json.dumps([ticker])
+            task.args =  json.dumps([ticker.lower()])
             task.enabled = True
             
             task.save()
         else:
-            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 60, period =  IntervalSchedule.SECONDS)
+            #every 12 minutes 
+            schedule, created  =  IntervalSchedule.objects.get_or_create(every = 720, period =  IntervalSchedule.SECONDS)
             print(ticker)
             task  = PeriodicTask.objects.create(interval  =  schedule, name = name, task = "singleticker.tasks.update_recent_tweets", args =  json.dumps([ticker]))
 
@@ -122,7 +125,7 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def stop_celeryBeatStockInfo(self, ticker):
-        name =   "every-30-seconds" +  "-" + ticker
+        name =  ticker.lower() +  "-" +  "every-minute-update-price" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -131,7 +134,7 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def stop_celeryBeatStockGraphInfo(self, ticker):
-        name =   "every-121-seconds" +  "-" + ticker
+        name =  ticker.lower() +  "-" +  "every-10-minutes-graph-price" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -140,7 +143,7 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def stop_celeryBeatStockSentimentInfo(self, ticker):
-        name =   "every-121-seconds-sentiment" +  "-" + ticker
+        name =   ticker.lower() +  "-" +  "every-31-minutes-sentiment" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
@@ -149,7 +152,7 @@ class SingleStockConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def stop_celeryBeatTweetsRecent(self, ticker):
-        name =   "every-60-seconds-recent=tweets" +  "-" + ticker
+        name =  ticker.lower() +  "-" +  "every-12-minutes-recent=tweets" 
         task  =  PeriodicTask.objects.filter(name =name)
         if len(task)>0:
             task =  task.first()
