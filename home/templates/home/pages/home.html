@@ -449,8 +449,9 @@
 
         async created() {
             //Web Socket socket
+            var ws_scheme  =  window.location.protocol == "https:" ? "wss" : "ws";
             const homeSocket = new WebSocket(
-                'ws://' +
+                ws_scheme + '://' +
                 window.location.host +
                 '/ws/home/'
 
