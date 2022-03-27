@@ -148,8 +148,6 @@ def createHourlyRecord(self, ticker):
     current_date = datetime.datetime.now()
     # current_hour =  datetime.datetime.now().time().hour
     created_time = datetime.datetime.now() - datetime.timedelta(minutes=60)
-    print("The time minus 60 minutes  " + created_time)
-    print("The time now  " + current_date)
     list_records_previous_day = TweetRecord.objects.filter(
         stock=stock, tweet_date__lte=created_time)
 
