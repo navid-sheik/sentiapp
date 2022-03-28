@@ -87,21 +87,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
 
-new_context = ssl.SSLContext() # this sets the verify_mode to 'CERT_NONE'
-host = [{
-        'address': f'rediss://{REDIS_HOST}:{REDIS_PORT}', # don't miss the 'rediss'!
-        'db': REDIS_DB,
-        'password': REDIS_PASSWORD,
-        'ssl': new_context ,
-    }]
+
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": host,
-            "symmetric_encryption_keys": [SECRET_KEY],
-            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }
