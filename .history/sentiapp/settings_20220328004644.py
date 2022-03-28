@@ -87,24 +87,11 @@ WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
 
 
-redis_backend_url = "rediss://%s:%s/5" % (
-    os.environ.get("REDIS_HOST", "redis_int"),
-    os.environ.get("REDIS_PORT", 6379)
-)
-ssl_context = ssl.SSLContext()
-ssl_context.load_cert_chain(
-    certfile="/opt/redis/certs/client.crt",
-    keyfile="/opt/redis/certs/client.key",
-)
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-           "hosts": ({
-                'address': redis_backend_url,
-                'ssl': ssl_context
-            },)
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }
