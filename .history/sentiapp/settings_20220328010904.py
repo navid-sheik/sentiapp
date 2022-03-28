@@ -87,21 +87,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
 
-ssl_context = ssl.SSLContext()
-ssl_context.check_hostname = False
 
-heroku_redis_ssl_host = {
-    'address': 'rediss://:password@127.0.0.1:6379/0' , # The 'rediss' schema denotes a SSL connection.
-    'ssl': ssl_context
-}
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-             'hosts': (heroku_redis_ssl_host,)
-
-            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }
