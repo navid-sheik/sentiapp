@@ -91,7 +91,7 @@ ssl_context = ssl.SSLContext()
 ssl_context.check_hostname = False
 
 heroku_redis_ssl_host = {
-    'address': os.environ.get('REDIS_URL', 'rediss://localhost:6379'),  # The 'rediss' schema denotes a SSL connection.
+    'address': os.environ.get('REDIS_URL', 'rediSs://localhost:6379'),  # The 'rediss' schema denotes a SSL connection.
     'ssl': ssl_context
 }
 
