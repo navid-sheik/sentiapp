@@ -293,7 +293,7 @@ def getSentiment24Hours(request, ticker_id):
 
         'values_polarity':  list(list_polarity),
         'values_subjectivity':  list(list_subjecivity),
-        'dates' :  [dt.time() for dt in list_date]
+        'dates' :  [dt.time().strftime("%H:%M") for dt in list_date]
 
     })
 
@@ -306,6 +306,7 @@ def getSentimentTimeRange(request, ticker_id, time_range):
     records = HourlyRecord.objects.filter(
         stock=stock, tweet_date__gte=date_from)
 
+   
 
     list_ids = records.values_list('id', flat=True)
     fetched_date = datetime.datetime.now()
@@ -366,6 +367,32 @@ def getSentimentTimeRange(request, ticker_id, time_range):
         'values_polarity':  list(list_polarity),
         'values_subjectivity':  list(list_subjecivity),
         'dates' :  [dt.date() for dt in list_date]
+
+    })
+
+
+def should_buy_based_on_range(request, ticker_id, time_range):
+    stock_ticker =  ticker_id.lower()
+    stock = get_object_or_404(StockSummary, ticker=stock_ticker)
+    date_from = datetime.datetime.now() - datetime.timedelta(days=time_range)
+    records = HourlyRecord.objects.filter(
+        stock=stock, tweet_date__gte=date_from)
+
+    
+    list_negative = records.values_list('overall_neg', flat=True)
+    mean_negative = mean(list_negative)
+
+   
+
+    list_positive = records.values_list('overall_pos', flat=True)
+    mean_positive = mean(list_positive)
+
+    shouldBuy =  True  if mean_positive >= mean_negative  else False
+
+    return JsonResponse({
+        'shouldBuy': shouldBuy,
+        
+       
 
     })
 

@@ -306,6 +306,7 @@ def getSentimentTimeRange(request, ticker_id, time_range):
     records = HourlyRecord.objects.filter(
         stock=stock, tweet_date__gte=date_from)
 
+   
 
     list_ids = records.values_list('id', flat=True)
     fetched_date = datetime.datetime.now()

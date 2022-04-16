@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+
 from pathlib import Path
 import os
+import ssl
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,6 +56,9 @@ CRISPY_TEMPLATE_PACK =  'bootstrap4'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -81,11 +86,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
+
+ssl_context = ssl.SSLContext()
+ssl_context.check_hostname = False
+channels_redis_hosts = [{
+        'address': os.environ.get('REDIS_URL'),
+        'ssl': ssl_context
+    }]
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": os.environ.get('REDIS_URL'),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#             "CONNECTION_POOL_KWARGS": {
+#                 "ssl_cert_reqs": None
+#             },
+#         }
+#     }
+# }
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            'hosts': channels_redis_hosts,
+            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }
@@ -94,13 +120,29 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': { 
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
 
+#POST GRES
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd8vo5d9u0dnks5', 
+        'USER': 'iykgdslhfpqypi', 
+        'PASSWORD': '47847c4b45175c24f5a8ba62042debbaa82c00fd761a4b8b82f9e1000c37b3ad',
+        'HOST': 'ec2-52-44-209-165.compute-1.amazonaws.com', 
+        'PORT': '5432',
+    }
+}
+
+import dj_database_url
+db_from_env  =  dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -147,10 +189,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR ,'static')
 
 MEDIA_ROOT =Path(BASE_DIR, 'media')
 MEDIA_URL =  '/media/'
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -158,14 +202,16 @@ MEDIA_URL =  '/media/'
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH_USER_MODEL = 'mainapp.User'
 
-CELERY_BROKER_URL  =  'redis://127.0.0.1:6379'
+CELERY_BROKER_URL  =  os.environ['REDIS_URL']
+# CELERY_BROKER_URL  =  'redis://127.0.0.1:6379'
 CELERY_ACCEPT_CONTENT  =  ['application/json']
 CELERY_RESULT_SERIALIZER =  'json'
 CELERY_TASK_SERIALIZER =  'json'
 CELERY_TIMEZONE =  'Europe/London'
 CELERY_RESULT_BACKEND = "django-db"
 
-
+CELERY_WORKER_CONCURRENCY = 2   # this is the one I was actually looking for
+CELERY_MAX_TASKS_PER_CHILD = 2
 #celery beat setting
 
 CELERY_BEAT_SCHEDULER =  'django_celery_beat.schedulers:DatabaseScheduler'

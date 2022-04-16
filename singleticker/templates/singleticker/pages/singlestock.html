@@ -2134,6 +2134,9 @@
 
                 }
             },
+            isDuplicate(entry, arr) {
+                    return arr.some(x => entry == x);
+            },
             async sentimentAnalysisRange(time_range) {
                 var pathArray = window.location.pathname.split('/');
 
@@ -2144,6 +2147,20 @@
                     let data = await responseSentiment.json();
                     console.log("Sentiment data");
                     console.log(data)
+                    let newDates = []
+                    let filterIndex  = []
+                    for (let i = 0; i < newDates.length; i++) {
+                        if (!isDuplicate(entry, newArray)) 
+                            { 
+                                newArray.push(entry)
+                                filterIndex.push(i)
+                             }
+                    }
+                    
+                    console.log("New dates");
+                    console.log(newDates);
+                    console.log("New index");
+                    console.log(filterIndex);
                     this.mean_24_compound = data.mean_compound
                     this.mean_24_negativity = data.mean_negative
                     this.mean_24_neutrality = data.mean_neutral
