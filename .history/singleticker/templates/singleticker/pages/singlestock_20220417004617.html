@@ -2137,14 +2137,6 @@
             isDuplicate(entry, arr) {
                     return arr.some(x => entry == x);
             },
-            filterItemsBasedOnIndex(indices, arr){
-                var res = arr.filter(function (eachElem, index) {
-                    return indices.indexOf(index) == -1
-                })
-                return arr;
-            },
-
-
             async sentimentAnalysisRange(time_range) {
                 var pathArray = window.location.pathname.split('/');
 
@@ -2164,14 +2156,13 @@
                             newDates.push(data.dates[i]);
                             filterIndex.push(i);
                         }
-                    
                             
                     
                     console.log("New dates");
                     console.log(newDates);
                     console.log("New index");
                     console.log(filterIndex);
-                    this.mean_24_compound = this.filterItemsBasedOnIndex(data.mean_compound)
+                    this.mean_24_compound = data.mean_compound
                     this.mean_24_negativity = data.mean_negative
                     this.mean_24_neutrality = data.mean_neutral
                     this.mean_24_polarity = data.mean_polarity
