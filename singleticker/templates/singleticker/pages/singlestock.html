@@ -2149,10 +2149,10 @@
                     console.log(data)
                     let newDates = []
                     let filterIndex  = []
-                    for (let i = 0; i < newDates.length; i++) {
-                        if (!isDuplicate(entry, newArray)) 
+                    for (let i = 0; i < data.dates.length; i++) {
+                        if (!isDuplicate(data.dates[i], data.dates)) 
                             { 
-                                newArray.push(entry)
+                                newArray.push(data.dates[i])
                                 filterIndex.push(i)
                              }
                     }
