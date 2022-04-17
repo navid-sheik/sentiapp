@@ -53,7 +53,7 @@
                         style=" border-bottom: 1px solid lightgrey;">
                         <div>
                             <div v-if="mapped_stocks_prices.length != 0"  style="display: flex;justify-content: center;"
-                            :style="colorClass"
+                            :style="[changesInTop100 ? {'color': '#ff0000'} : {'color': '#ffffff'}]"
                             >
                                 $[[ mapped_stocks_prices[index].latestPrice ]]
                             </div>
@@ -444,7 +444,7 @@
                 string_news: "",
                 news_symbols: [],
                 news: [],
-                changesInTop100 : false,
+                changesInTop100 : true,
             }
         }, computed: {
             colorClass() {
