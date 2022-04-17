@@ -496,12 +496,8 @@
                         self.symbols.forEach(element => copyArray.push((self.prices_symbols[element.symbol].quote)));
                         self.mapped_stocks_prices = copyArray
                         this.changesInTop100 = true
-                        setTimeout(() => {
-                            console.log("something");
-                            this.changesInTop100 = false;
-                        
-                        }, 2000);
-
+                        setTimeout(() => {console.log("something")}, 2000);
+                        this.changesInTop100 = false
 
 
                     }
