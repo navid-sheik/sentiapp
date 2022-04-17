@@ -21,10 +21,12 @@
         <!--NASDAQ 100-->
 
         <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
-
+            <h3 style="padding-left: 5px;margin-bottom: 10px;color: white;"> NASDAQ 100</h3>
             <div class=" card card-block"
-                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px; background-color: #383c48;color: white;">
-                <h3 style="padding-left: 5px;margin-bottom: 10px;"> NASDAQ 100</h3>
+                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px; background-color: #383c48;"
+                :style="[changesInTop100? {'color': '#000000'} : {'color': '#ffffff'}]">
+                >
+                
                 <div class="row no-gutters" v-for="(stock, index) in symbols" style="margin-bottom: 10px;">
 
                     <div class="col-2">
@@ -85,10 +87,10 @@
         <!--MOST ACTIVE-->
         <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
 
-
+            <h3 style="padding-left: 5px;margin-bottom: 10px;color: white;"> MOST ACTIVE </h3>
             <div class="card card-block"
                 style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px;padding: 5px; background-color: #383c48;color: white;">
-                <h3> MOST ACTIVE </h3>
+          
                 <div class="row" v-for="stock in list_most_active">
                     <div class="col-8" style="border-bottom: 1px solid lightgrey;">
                         <div>
@@ -126,6 +128,7 @@
 
     </div>
 
+    <h3 style="padding-left: 5px;margin-bottom: 10px;color: white;"> MOST VOLUME </h3>
     <!--IEX VOLUME-->
     <div class="row flex-nowrap" style="background-color: none;overflow-y: scroll;padding: 10px;">
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" v-for="stock in list_iex_stock">
@@ -191,15 +194,16 @@
         <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: none;">
 
             <!-- Row 1 new-->
+            <h3 style="padding-left: 5px;margin-bottom: 10px;color: white;"> NEWS </h3>
 
             <div class="row no-gutters" style="background-color: #383c48;margin-bottom: 25px;"
                 v-for="single in news.slice(0,1)">
 
                 
                 <div class="col-8" style="background-color: gray;">
-                    <a :href="single.url" target="_blank"></a>
-                    <img v-bind:src="single.image" style="height: 100%; width: 100%;object-fit :fill;" />
-                    </a>
+            
+                        <img v-bind:src="single.image" style="height: 100%; width: 100%;object-fit :fill;" />
+                    
                 </div>
 
                 <div class="col" style="background-color: #383c48;">
@@ -220,7 +224,7 @@
                         </div>
 
                         <div style="display: flex; flex-direction: row; justify-content: flex-end;">
-                            <button class="btn btn-dark"> READ MORE </button>
+                            <a :href="single.url" target="_blank"> <button class="btn btn-dark"> READ MORE </button> </a>
 
 
                         </div>
@@ -306,11 +310,11 @@
             <div style="display: flex;flex-direction: column;">
 
 
-
+                <h3 style="color: white;"> MOST GAINERS </h3>
                 <div class="card card-block"
                     style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px;padding: 5px; background-color: #383c48;color: white;">
 
-                    <h3> MOST GAINERS </h3>
+                   
                     <div class="row" v-for="stock in list_most_gainers">
                         <div class="col-8" style="border-bottom: 1px solid lightgrey;">
                             <div>
@@ -342,11 +346,11 @@
                     </div>
                 </div>
 
-
+                <h3 style="color: white;"> MOST LOSERS </h3>
                 <div class="card card-block"
                     style="overflow-y: auto; overflow-x: hidden; height:500px;padding: 5px; background-color: #383c48;color: white;">
 
-                    <h3> MOST LOSERS </h3>
+                   
                     <div class="row" v-for="stock in list_most_losers">
                         <div class="col-8" style="border-bottom: 1px solid lightgrey;">
                             <div>
@@ -438,6 +442,7 @@
                 string_news: "",
                 news_symbols: [],
                 news: [],
+                changesInTop100 : false,
             }
         }, computed: {
             colorClass() {
@@ -449,8 +454,9 @@
 
         async created() {
             //Web Socket socket
+            var ws_scheme  =  window.location.protocol == "https:" ? "wss" : "ws";
             const homeSocket = new WebSocket(
-                'ws://' +
+                ws_scheme + '://' +
                 window.location.host +
                 '/ws/home/'
 
@@ -489,6 +495,10 @@
                         console.log(self.symbols)
                         self.symbols.forEach(element => copyArray.push((self.prices_symbols[element.symbol].quote)));
                         self.mapped_stocks_prices = copyArray
+                        this.changesInTop100 = true
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        this.changesInTop100 = false
+
 
                     }
 

@@ -23,7 +23,9 @@
         <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
             <h3 style="padding-left: 5px;margin-bottom: 10px;color: white;"> NASDAQ 100</h3>
             <div class=" card card-block"
-                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px; background-color: #383c48;color: white;">
+                style="overflow-y: auto; overflow-x: hidden; height:500px;margin-bottom: 20px; background-color: #383c48;"
+                :style="[changesInTop100? {'color': '#000000'} : {'color': '#ffffff'}]">
+                >
                 
                 <div class="row no-gutters" v-for="(stock, index) in symbols" style="margin-bottom: 10px;">
 
@@ -440,6 +442,7 @@
                 string_news: "",
                 news_symbols: [],
                 news: [],
+                changesInTop100 : false,
             }
         }, computed: {
             colorClass() {
@@ -492,6 +495,10 @@
                         console.log(self.symbols)
                         self.symbols.forEach(element => copyArray.push((self.prices_symbols[element.symbol].quote)));
                         self.mapped_stocks_prices = copyArray
+                        this.changesInTop100 = true
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        this.changesInTop100 = false
+
 
                     }
 
