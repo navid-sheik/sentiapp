@@ -451,28 +451,27 @@
                 changesMostLosers : false,
             }
         }, computed: {
-            changesInTop100Class(prices) {
-                let color = (this.changesInTop100 == false) ? 'white' : '#51A0D5';
-
+            changesInTop100Class() {
+                let color = (this.changesInTop100 == false) ? 'white' : 'red';
                 return 'color: ' + color;
             },
             changesMostActiveClass() {
-                let color = (this.changesMostActive == false) ? 'white' : '#51A0D5';
+                let color = (this.changesMostActive == false) ? 'white' : 'red';
                 return 'color: ' + color;
             },
 
             changesMostVolumeClass() {
-                let color = (this.changesMostVolume == false) ? 'white' : '#51A0D5';
+                let color = (this.changesMostVolume == false) ? 'white' : 'red';
                 return 'color: ' + color;
             },
 
             changesMostGainersClass() {
-                let color = (this.changesMostGainers == false) ? 'white' : '#51A0D5';
+                let color = (this.changesMostGainers == false) ? 'white' : 'red';
                 return 'color: ' + color;
             },
 
             changesMostLosersClass() {
-                let color = (this.changesMostLosers == false) ? 'white' : '#51A0D5';
+                let color = (this.changesMostLosers == false) ? 'white' : 'red';
                 return 'color: ' + color;
             }
 
