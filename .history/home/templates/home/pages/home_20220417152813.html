@@ -451,7 +451,7 @@
                 changesMostLosers : false,
             }
         }, computed: {
-            changesInTop100Class() {
+            changesInTop100Class(prices) {
                 let color = (this.changesInTop100 == false) ? 'white' : '#f2aa4cff';
 
                 return 'color: ' + color;

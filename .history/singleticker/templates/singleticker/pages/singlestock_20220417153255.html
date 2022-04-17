@@ -71,7 +71,7 @@
                 <div class="row no-gutters" style="background-color: none;">
                     <div style="display: flex;flex-direction: column;background-color: none;">
                         <div style="background-color: none;">
-                            <h4> $[[currentPrice]] </h4>
+                            <h4 :style="changesPriceClass"> $[[currentPrice]] </h4>
 
                         </div>
 
@@ -197,13 +197,18 @@
     <div style="display: flex; flex-direction: row; margin-bottom: 10px;">
         <div style="padding: 5px;flex: 1">
 
-            <button style="width: 100%;"  :style="[longTermBuy ? {'background': '#18a558'} : {'background': '#ff0000'}]" > LONG TERM
+            <button style="width: 100%;"  :style="[longTermBuy ? {'background': '#18a558'} : {'background': '#ff0000'}]" > LONG TERM 
+                <i class="fa-solid fa-check" v-if="longTermBuy"></i>
+                <i class="fa-solid fa-remove" v-else></i>
             </button> 
         </div>
 
         <div style="padding: 5px;flex: 1">
-            <button style="width: 100%;" :style="[shortTermBuy ? {'background': '#18a558'} : {'background': '#ff0000'}]" > SHORT TERM </button>
-
+            <button style="width: 100%;" :style="[shortTermBuy ? {'background': '#18a558'} : {'background': '#ff0000'}]" > SHORT TERM 
+                <i class="fa-solid fa-check" v-if="shortTermBuy"></i>
+                <i class="fa-solid fa-remove" v-else></i>
+            </button>
+           
         </div>
 
 
@@ -213,7 +218,7 @@
     </div>
 
 
-
+    <h3 style="margin-top:20px;color: white;"> HISTORICAL DATA</h3>
     <div class="row" style="margin-top: 20px;background-color: none;">
         <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: none;padding: 5px;">
 
@@ -466,7 +471,7 @@
     </div>
 
     <!--SENTIMENT ANALYSIS-->
-
+    <h3 style="margin-top:20px;color: white;"> SENTIMENT ANALYSIS</h3>
     <div class="row" style="margin-top: 20px;background-color: none;">
         <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12" style="background-color: none;padding: 5px;">
 
@@ -786,7 +791,7 @@
         </div>
 
         <div class="col" style="background-color: #383c48; height: 100%; margin-top: 20px;">
-            <h2 style="font-size: 30px; text-align: center;"> Word CLoud </h2>
+            <h2 style="font-size: 30px; text-align: center;"> WORD CLOUD </h2>
             <div class="zc-body">
                 <div id="myChart" style="background-color: #383c48;"></div>
 
@@ -1148,21 +1153,29 @@
                 longTermBuy : true,
 
                 shortTermBuy: true,
+                changesInPrice : false,
 
 
 
 
 
             }
+        }, computed: {
+            changesPriceClass() {
+                let color = (this.changesInPrice == false) ? 'white' : '#f2aa4cff';
+
+                return 'color: ' + color;
+            },
+        
         },
 
         async created() {
 
             var stockPath = window.location.pathname.split('/');
             var stockSingle = stockPath[2].toLowerCase()
-
+            var ws_scheme  =  window.location.protocol == "https:" ? "wss" : "ws";
             this.stockSocket = new WebSocket(
-                'ws://' +
+                ws_scheme + '://' +
                 window.location.host +
                 '/ws/singlestock/' +
                 stockSingle + '/'
@@ -1177,7 +1190,6 @@
 
 
                     if (response.hasOwnProperty('graph')) {
-                        console.log("exustubgs")
                         var prices = response.graph.data.map(x => x.open);
                         console.log(prices)
                         var dates = response.graph.data.map(x => x.date);
@@ -1219,7 +1231,7 @@
                         console.log("Updating recent tweets")
 
                         console.log(data)
-                        this.tweets_recent = data
+                        self.tweets_recent = data
 
 
 
@@ -1227,6 +1239,12 @@
 
                     } else {
                         self.currentPrice = response.latestPrice;
+                        self.changesInPrice = true
+                        setTimeout(() => {
+                         
+                            self.changesInPrice= false;
+                        
+                        }, 3500);
 
                     }
 
@@ -1615,8 +1633,8 @@
                 title: {
                     display: true,
                     position: "top",
-                    text: "Tweet Analyzed",
-                    fontSize: 30,
+                    text: "TWEETS ANALYSED",
+                    fontSize: 28,
                     fontFamily: "Arial",
                     fontColor: "#fff"
                 },
@@ -2129,6 +2147,26 @@
 
                 }
             },
+            isDuplicate(entry, arr) {
+                    return arr.some(x => entry == x);
+            },
+            filterItemsBasedOnIndex(indices, arr){
+                res = []
+                for (var i=0, l=arr.length; i<l; i++){
+                    for (var j=0, k=indices.length; j<k; j++){
+                        if (i ==  indices[j]){
+                            res.push(arr[i]);
+                        }
+
+                    }
+                   
+
+                }
+            
+                return res;
+            },
+
+
             async sentimentAnalysisRange(time_range) {
                 var pathArray = window.location.pathname.split('/');
 
@@ -2139,6 +2177,22 @@
                     let data = await responseSentiment.json();
                     console.log("Sentiment data");
                     console.log(data)
+                    console.log(data.dates[0])
+                    let newDates = []
+                    let filterIndex  = []
+              
+                    for (var i=0, l=data.dates.length; i<l; i++)
+                        if (newDates.indexOf(data.dates[i]) === -1 && data.dates[i] !== ''){
+                            newDates.push(data.dates[i]);
+                            filterIndex.push(i);
+                        }
+                    
+                            
+                    
+                    console.log("New dates");
+                    console.log(newDates);
+                    console.log("New index");
+                    console.log(filterIndex);
                     this.mean_24_compound = data.mean_compound
                     this.mean_24_negativity = data.mean_negative
                     this.mean_24_neutrality = data.mean_neutral
@@ -2149,15 +2203,15 @@
                     this.pieChart.data.datasets[0].data = [data.positive_count, data.negative_count, data.neutral_count];
 
                     this.pieChart.update();
-                    this.sentimentChart.data.labels = data.dates;
-                    this.sentimentChart.data.datasets[0].data = data.values_compound;
-                    this.sentimentChart.data.datasets[1].data = data.values_positives;
+                    this.sentimentChart.data.labels =  this.filterItemsBasedOnIndex(filterIndex,data.dates);
+                    this.sentimentChart.data.datasets[0].data = this.filterItemsBasedOnIndex(filterIndex,data.values_compound);
+                    this.sentimentChart.data.datasets[1].data = this.filterItemsBasedOnIndex(filterIndex,data.values_positives);
 
-                    this.sentimentChart.data.datasets[2].data = data.values_negatives;
+                    this.sentimentChart.data.datasets[2].data = this.filterItemsBasedOnIndex(filterIndex,data.values_negatives);
 
-                    this.sentimentChart.data.datasets[3].data = data.values_neutral;
-                    this.sentimentChart.data.datasets[4].data = data.values_polarity;
-                    this.sentimentChart.data.datasets[5].data = data.values_subjectivity;
+                    this.sentimentChart.data.datasets[3].data = this.filterItemsBasedOnIndex(filterIndex,data.values_neutral);
+                    this.sentimentChart.data.datasets[4].data = this.filterItemsBasedOnIndex(filterIndex,data.values_polarity);
+                    this.sentimentChart.data.datasets[5].data = this.filterItemsBasedOnIndex(filterIndex,data.values_subjectivity);
                     this.sentiment_ids = data.list_ids;
                     this.sentimentChart.update();
 
@@ -2331,7 +2385,7 @@
                 var pathArray = window.location.pathname.split('/');
 
                 var urlShouldBuy= "{%url 'singleticker:should_buy_based_on_range' 2000000000000000 50000000000000%}".replace("2000000000000000", pathArray[2].toLowerCase());
-                var urlShouldBuyWithDaterange = urlWithSentiment.replace('50000000000000', time_range)
+                var urlShouldBuyWithDaterange = urlShouldBuy.replace('50000000000000', time_range)
                 let responseShouldBuy= await fetch(urlShouldBuyWithDaterange);
                 if (responseShouldBuy.ok) {
                     let data = await responseShouldBuy.json();
