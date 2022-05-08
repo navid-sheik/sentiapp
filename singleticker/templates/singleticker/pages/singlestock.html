@@ -1443,7 +1443,7 @@
                     let data = await responseHistogram.json();
                     console.log(data)
                     //change data.map for dynamic
-                    var prices = data.stock_quote.map(x => x.open);
+                    var prices = data.stock_quote.map(x => x.marketOpen);
                     console.log(prices)
                     var dates = data.stock_quote.map(x => x.label);
                     console.log(dates);
