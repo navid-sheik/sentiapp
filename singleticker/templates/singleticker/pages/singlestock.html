@@ -1439,12 +1439,13 @@
                 histogramPath = histogramPath.replace("50000000000000", "1d")
                 let responseHistogram = await fetch(histogramPath);
                 if (responseHistogram.ok) {
+                   
                     let data = await responseHistogram.json();
-
+                    console.log(data)
                     //change data.map for dynamic
-                    var prices = data.stock_quote.data.map(x => x.open);
+                    var prices = data.stock_quote.map(x => x.open);
                     console.log(prices)
-                    var dates = data.stock_quote.data.map(x => x.label);
+                    var dates = data.stock_quote.map(x => x.label);
                     console.log(dates);
 
                     console.log(data.stock_quote)
