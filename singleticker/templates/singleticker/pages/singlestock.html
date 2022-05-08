@@ -1281,7 +1281,7 @@
                 this.yearlyChange  =   (data.stock_quote.ytdChange * 100).toFixed(2);
                 this.peRatio  =   data.stock_quote.peRatio;
             } else {
-                alert("failed to load the list of hobbies");
+                // alert("failed to load the list of hobbies");
             }
 
             this.getCompanyInfo();
@@ -1459,7 +1459,7 @@
                     this.myChart.data.datasets[0].data = prices;
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -1480,7 +1480,7 @@
 
             } else {
                 console.log(response.error)
-                alert("failed to load the list of hobbies");
+                // alert("failed to load the list of hobbies");
             }
 
 
@@ -1852,7 +1852,7 @@
                     this.sector = data.stock_quote.industry;
                     this.employees = data.stock_quote.employees;
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
             },
@@ -1860,15 +1860,15 @@
             async stockHistoryDynamics() {
                 var pathArray = window.location.pathname.split('/');
                 var histogramPath = "{%url 'singleticker:get_time_history' 2000000000000000 50000000000000%}".replace("2000000000000000", pathArray[2].toLowerCase())
-                histogramPath = histogramPath.replace("50000000000000", "dynamic")
+                histogramPath = histogramPath.replace("50000000000000", "1d")
                 let responseHistogram = await fetch(histogramPath);
                 if (responseHistogram.ok) {
                     let data = await responseHistogram.json();
 
                     //change data.map for dynamic
-                    var prices = data.stock_quote.data.map(x => x.open);
+                    var prices = data.stock_quote.data.map(x => x.marketOpen);
                     console.log(prices)
-                    var dates = data.stock_quote.data.map(x => x.minute);
+                    var dates = data.stock_quote.data.map(x => x.label);
                     console.log(dates);
 
                     console.log(data.stock_quote)
@@ -1883,7 +1883,7 @@
                     this.myChart.data.datasets[0].data = prices;
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -1918,7 +1918,7 @@
                     this.myChart.data.datasets[0].label = "Last 5 Days";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -1953,7 +1953,7 @@
                     this.myChart.data.datasets[0].label = "Last Month";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -1990,7 +1990,7 @@
                     this.myChart.data.datasets[0].label = "Last 3 Months";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -2025,7 +2025,7 @@
                     this.myChart.data.datasets[0].label = "Last Year";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -2061,7 +2061,7 @@
                     this.myChart.data.datasets[0].label = "Last 5 Years";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -2098,7 +2098,7 @@
                     this.myChart.data.datasets[0].label = "Max";
                     this.myChart.update();
                 } else {
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
 
 
@@ -2314,7 +2314,7 @@
 
                 } else {
                     console.log(response.error)
-                    alert("failed to load the list of hobbies");
+                    // ("failed talerto load the list of hobbies");
                 }
             },
             get_positive_tweets() {
@@ -2374,7 +2374,7 @@
 
                 } else {
                     console.log(response.error)
-                    alert("failed to load the list of hobbies");
+                    // alert("failed to load the list of hobbies");
                 }
             },
             closeModal (){
