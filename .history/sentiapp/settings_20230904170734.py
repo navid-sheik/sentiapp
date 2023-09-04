@@ -14,6 +14,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 import ssl
+from decouple import Config
+
+config = Config(".env")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -87,20 +90,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
 
-new_context = ssl.SSLContext() # this sets the verify_mode to 'CERT_NONE'
-host = [{
-        'address': f'rediss://{REDIS_HOST}:{REDIS_PORT}', # don't miss the 'rediss'!
-        'db': REDIS_DB,
-        'password': REDIS_PASSWORD,
-        'ssl': new_context ,
+ssl_context = ssl.SSLContext()
+ssl_context.check_hostname = False
+channels_redis_hosts = [{
+        'address': os.environ.get('REDIS_URL'),
+        'ssl': ssl_context
     }]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "ssl_cert_reqs": None
+            },
+        }
+    }
+}
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": host,
-            "symmetric_encryption_keys": [SECRET_KEY],
+            'hosts': channels_redis_hosts,
             # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },

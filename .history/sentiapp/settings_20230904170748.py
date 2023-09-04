@@ -10,9 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+
 from pathlib import Path
 import os
 import ssl
+from decouple import Config
+
+config = Config(".env")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -86,12 +90,31 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sentiapp.wsgi.application'
 ASGI_APPLICATION = "sentiapp.asgi.application"
 
+ssl_context = ssl.SSLContext()
+ssl_context.check_hostname = False
+channels_redis_hosts = [{
+        'address': os.environ.get('REDIS_URL'),
+        'ssl': ssl_context
+    }]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "ssl_cert_reqs": None
+            },
+        }
+    }
+}
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            'hosts': channels_redis_hosts,
+            # "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
     },
 }
@@ -112,11 +135,11 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd8vo5d9u0dnks5', 
-        'USER': 'iykgdslhfpqypi', 
-        'PASSWORD': '47847c4b45175c24f5a8ba62042debbaa82c00fd761a4b8b82f9e1000c37b3ad',
-        'HOST': 'ec2-52-44-209-165.compute-1.amazonaws.com', 
-        'PORT': '5432',
+        'NAME': config('DB_NAME'), 
+        'USER': config('DB_USER'), 
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'), 
+        'PORT': config('DB_PORT'),
     }
 }
 
