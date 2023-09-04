@@ -2,7 +2,7 @@
 __pycache__/
 
 # Ignore .history directory
-./.history
+.history/
 
 # Ignore specific .env file
 sentiapp/.env
